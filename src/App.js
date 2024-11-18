@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from "react";
-import './App.css';
 
-function App() {
-  const [snake, setSnake] = useState([[10,10]])
-  const [food, setFood] = useState([5, 5]);
+const App = () => {
+  const gridSize = 20; // Size of the grid
+  const initialSnake = [[10, 10]]; // Initial position of the snake
+  const initialFood = [5, 5]; // Initial position of the food
+
+  const [snake, setSnake] = useState(initialSnake);
+  const [food, setFood] = useState(initialFood);
   const [direction, setDirection] = useState("RIGHT");
   const [gameOver, setGameOver] = useState(false);
-  const gridSize = 20;
 
-   // Move the snake
-   const moveSnake = () => {
-    if (gameOver) return;
-
+  // Move the snake
+  const moveSnake = () => {
     const newSnake = [...snake];
     const head = newSnake[newSnake.length - 1];
-
     let newHead;
+
     switch (direction) {
       case "UP":
         newHead = [head[0], head[1] - 1];
@@ -33,28 +33,35 @@ function App() {
         return;
     }
 
-    newSnake.push(newHead);
-    if (newHead[0] === food[0] && newHead[1] === food[1]) {
-      setFood([Math.floor(Math.random() * gridSize), Math.floor(Math.random() * gridSize)]);
-    } else {
-      newSnake.shift(); // Remove the tail if no food is eaten
-    }
-
-    // Check collisions
+    // Check for collisions
     if (
       newHead[0] < 0 ||
       newHead[1] < 0 ||
       newHead[0] >= gridSize ||
       newHead[1] >= gridSize ||
-      newSnake.slice(0, -1).some(segment => segment[0] === newHead[0] && segment[1] === newHead[1])
+      newSnake.some(segment => segment[0] === newHead[0] && segment[1] === newHead[1])
     ) {
       setGameOver(true);
-    } else {
-      setSnake(newSnake);
+      return;
     }
+
+    newSnake.push(newHead);
+
+    if (newHead[0] === food[0] && newHead[1] === food[1]) {
+      // Generate new food position
+      const newFood = [
+        Math.floor(Math.random() * gridSize),
+        Math.floor(Math.random() * gridSize),
+      ];
+      setFood(newFood);
+    } else {
+      newSnake.shift(); // Remove tail if no food is eaten
+    }
+
+    setSnake(newSnake);
   };
 
-  // Change direction
+  // Handle keyboard input
   const handleKeyDown = (e) => {
     switch (e.key) {
       case "ArrowUp":
@@ -74,27 +81,71 @@ function App() {
     }
   };
 
+  // Restart the game
+  const restartGame = () => {
+    setSnake(initialSnake);
+    setFood(initialFood);
+    setDirection("RIGHT");
+    setGameOver(false);
+  };
+
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [direction]);
 
   useEffect(() => {
-    const interval = setInterval(moveSnake, 200);
-    return () => clearInterval(interval);
-  }, [snake, direction]);
-
-  const restartGame = () => {
-    setSnake([[10, 10]]);
-    setFood([5, 5]);
-    setDirection("RIGHT");
-    setGameOver(false);
-  };
-
+    if (!gameOver) {
+      const interval = setInterval(moveSnake, 200);
+      return () => clearInterval(interval);
+    }
+  }, [snake, direction, gameOver]);
 
   return (
-    
+    <div className="flex items-center justify-center h-screen bg-gray-800">
+      <div
+        className="relative grid bg-gray-900"
+        style={{
+          width: "400px",
+          height: "400px",
+          gridTemplateColumns: `repeat(${gridSize}, 1fr)`,
+        }}
+      >
+        {/* Render grid cells */}
+        {Array.from({ length: gridSize * gridSize }).map((_, index) => {
+          const x = index % gridSize;
+          const y = Math.floor(index / gridSize);
+          const isSnake = snake.some(([sx, sy]) => sx === x && sy === y);
+          const isFood = food[0] === x && food[1] === y;
+
+          return (
+            <div
+              key={index}
+              className={`w-full h-full ${
+                isSnake
+                  ? "bg-green-500"
+                  : isFood
+                  ? "bg-red-500"
+                  : "bg-gray-800"
+              }`}
+            />
+          );
+        })}
+      </div>
+      {/* Game Over Overlay */}
+      {gameOver && (
+        <div className="absolute flex flex-col items-center justify-center bg-black bg-opacity-75 text-white w-full h-full">
+          <h1 className="text-4xl font-bold">Game Over</h1>
+          <button
+            className="mt-4 px-4 py-2 bg-green-500 hover:bg-green-600 rounded"
+            onClick={restartGame}
+          >
+            Restart
+          </button>
+        </div>
+      )}
+    </div>
   );
-}
+};
 
 export default App;
