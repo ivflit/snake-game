@@ -104,11 +104,12 @@ const App = () => {
   return (
     <div className="flex items-center justify-center h-screen bg-gray-800">
       <div
-        className="relative grid bg-gray-900"
+        className="relative grid bg-gray-700 border-4 border-gray-600"
         style={{
-          width: "400px",
-          height: "400px",
+          width: "420px",
+          height: "420px",
           gridTemplateColumns: `repeat(${gridSize}, 1fr)`,
+          gap: "2px", // Adds spacing between cells
         }}
       >
         {/* Render grid cells */}
@@ -121,12 +122,12 @@ const App = () => {
           return (
             <div
               key={index}
-              className={`w-full h-full ${
+              className={`w-full h-full rounded-sm ${
                 isSnake
                   ? "bg-green-500"
                   : isFood
                   ? "bg-red-500"
-                  : "bg-gray-800"
+                  : "bg-gray-600"
               }`}
             />
           );
