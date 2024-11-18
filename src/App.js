@@ -200,7 +200,7 @@ const App = () => {
               Submit
             </button>
           </div>
-)}
+        )}
       </div>
 
       {/* Leaderboard */}
