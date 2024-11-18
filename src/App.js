@@ -10,6 +10,9 @@ const App = () => {
   const [food, setFood] = useState(initialFood);
   const [direction, setDirection] = useState("RIGHT");
   const [gameOver, setGameOver] = useState(false);
+  const [score, setScore] = useState(0);
+  const [leaderboard, setLeaderboard] = useState(leaderboardData);
+  const [playerName, setPlayerName] = useState("");
 
   // Move the snake
   const moveSnake = () => {
@@ -55,6 +58,7 @@ const App = () => {
         Math.floor(Math.random() * gridSize),
       ];
       setFood(newFood);
+      setScore(score + 1); // Increase score when food is eaten
     } else {
       newSnake.shift(); // Remove tail if no food is eaten
     }
@@ -88,6 +92,18 @@ const App = () => {
     setFood(initialFood);
     setDirection("RIGHT");
     setGameOver(false);
+    setScore(0);
+  };
+
+  // Submit player name to the leaderboard
+  const submitScore = () => {
+    if (playerName.trim()) {
+      const updatedLeaderboard = [...leaderboard, { name: playerName, score }];
+      updatedLeaderboard.sort((a, b) => b.score - a.score); // Sort by highest score
+      setLeaderboard(updatedLeaderboard);
+      setPlayerName(""); // Reset player name
+      restartGame(); // Restart game after submission
+    }
   };
 
   useEffect(() => {
@@ -128,8 +144,13 @@ const App = () => {
         <p className="text-gray-400">A React app made by Ivan Flitcroft</p>
       </header>
 
+      {/* Score Display */}
+      <div className="text-center mt-4">
+        <h3 className="text-xl font-bold">Score: {score}</h3>
+      </div>
+
       {/* Main Game */}
-      <div className="flex items-center justify-center mt-8">
+      <div className="flex items-center justify-center mt-4">
         <div
           className="relative grid bg-gray-700 border-4 border-gray-600"
           style={{
@@ -164,11 +185,19 @@ const App = () => {
         {gameOver && (
           <div className="absolute flex flex-col items-center justify-center bg-black bg-opacity-75 text-white w-full h-full">
             <h1 className="text-4xl font-bold">Game Over</h1>
+            <p className="text-lg mt-2">Your Score: {score}</p>
+            <input
+              type="text"
+              placeholder="Enter your name"
+              className="mt-4 px-4 py-2 rounded bg-gray-700 text-white"
+              value={playerName}
+              onChange={(e) => setPlayerName(e.target.value)}
+            />
             <button
               className="mt-4 px-4 py-2 bg-green-500 hover:bg-green-600 rounded"
-              onClick={restartGame}
+              onClick={submitScore}
             >
-              Restart
+              Submit
             </button>
           </div>
         )}
@@ -178,7 +207,7 @@ const App = () => {
       <section className="mt-8 px-4">
         <h3 className="text-xl font-bold text-center">Leaderboard</h3>
         <ul className="mt-4 max-w-md mx-auto bg-gray-900 p-4 rounded shadow">
-          {leaderboardData.map((entry, index) => (
+          {leaderboard.map((entry, index) => (
             <li
               key={index}
               className="flex justify-between py-2 border-b border-gray-700 last:border-none"
