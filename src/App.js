@@ -183,7 +183,7 @@ const App = () => {
         </div>
         {/* Game Over Overlay */}
         {gameOver && (
-          <div className="absolute flex flex-col items-center justify-center bg-black bg-opacity-75 text-white w-full h-full">
+          <div className="fixed top-0 left-0 flex flex-col items-center justify-center bg-black bg-opacity-75 text-white w-full h-screen">
             <h1 className="text-4xl font-bold">Game Over</h1>
             <p className="text-lg mt-2">Your Score: {score}</p>
             <input
@@ -200,7 +200,7 @@ const App = () => {
               Submit
             </button>
           </div>
-        )}
+)}
       </div>
 
       {/* Leaderboard */}
