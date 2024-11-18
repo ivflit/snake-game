@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import leaderboardData from "./leaderboard.json";
 
 const App = () => {
   const gridSize = 20; // Size of the grid
@@ -102,49 +103,92 @@ const App = () => {
   }, [snake, direction, gameOver]);
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-800">
-      <div
-        className="relative grid bg-gray-700 border-4 border-gray-600"
-        style={{
-          width: "420px",
-          height: "420px",
-          gridTemplateColumns: `repeat(${gridSize}, 1fr)`,
-          gap: "2px", // Adds spacing between cells
-        }}
-      >
-        {/* Render grid cells */}
-        {Array.from({ length: gridSize * gridSize }).map((_, index) => {
-          const x = index % gridSize;
-          const y = Math.floor(index / gridSize);
-          const isSnake = snake.some(([sx, sy]) => sx === x && sy === y);
-          const isFood = food[0] === x && food[1] === y;
+    <div className="bg-gray-800 text-white min-h-screen">
+      {/* Navbar */}
+      <nav className="flex items-center justify-between px-4 py-2 bg-gray-900">
+        <h1 className="text-2xl font-bold">Snake Game</h1>
+        <a
+          href="https://github.com/ivflit"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 text-gray-300 hover:text-white"
+        >
+          <img
+            src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+            alt="GitHub"
+            className="w-6 h-6"
+          />
+          GitHub
+        </a>
+      </nav>
 
-          return (
-            <div
-              key={index}
-              className={`w-full h-full rounded-sm ${
-                isSnake
-                  ? "bg-green-500"
-                  : isFood
-                  ? "bg-red-500"
-                  : "bg-gray-600"
-              }`}
-            />
-          );
-        })}
-      </div>
-      {/* Game Over Overlay */}
-      {gameOver && (
-        <div className="absolute flex flex-col items-center justify-center bg-black bg-opacity-75 text-white w-full h-full">
-          <h1 className="text-4xl font-bold">Game Over</h1>
-          <button
-            className="mt-4 px-4 py-2 bg-green-500 hover:bg-green-600 rounded"
-            onClick={restartGame}
-          >
-            Restart
-          </button>
+      {/* Title and Subtitle */}
+      <header className="text-center mt-6">
+        <h2 className="text-3xl font-bold">Snake Game</h2>
+        <p className="text-gray-400">A React app made by Ivan Flitcroft</p>
+      </header>
+
+      {/* Main Game */}
+      <div className="flex items-center justify-center mt-8">
+        <div
+          className="relative grid bg-gray-700 border-4 border-gray-600"
+          style={{
+            width: "420px",
+            height: "420px",
+            gridTemplateColumns: `repeat(${gridSize}, 1fr)`,
+            gap: "2px", // Adds spacing between cells
+          }}
+        >
+          {/* Render grid cells */}
+          {Array.from({ length: gridSize * gridSize }).map((_, index) => {
+            const x = index % gridSize;
+            const y = Math.floor(index / gridSize);
+            const isSnake = snake.some(([sx, sy]) => sx === x && sy === y);
+            const isFood = food[0] === x && food[1] === y;
+
+            return (
+              <div
+                key={index}
+                className={`w-full h-full rounded-sm ${
+                  isSnake
+                    ? "bg-green-500"
+                    : isFood
+                    ? "bg-red-500"
+                    : "bg-gray-600"
+                }`}
+              />
+            );
+          })}
         </div>
-      )}
+        {/* Game Over Overlay */}
+        {gameOver && (
+          <div className="absolute flex flex-col items-center justify-center bg-black bg-opacity-75 text-white w-full h-full">
+            <h1 className="text-4xl font-bold">Game Over</h1>
+            <button
+              className="mt-4 px-4 py-2 bg-green-500 hover:bg-green-600 rounded"
+              onClick={restartGame}
+            >
+              Restart
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Leaderboard */}
+      <section className="mt-8 px-4">
+        <h3 className="text-xl font-bold text-center">Leaderboard</h3>
+        <ul className="mt-4 max-w-md mx-auto bg-gray-900 p-4 rounded shadow">
+          {leaderboardData.map((entry, index) => (
+            <li
+              key={index}
+              className="flex justify-between py-2 border-b border-gray-700 last:border-none"
+            >
+              <span>{entry.name}</span>
+              <span>{entry.score}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
     </div>
   );
 };
