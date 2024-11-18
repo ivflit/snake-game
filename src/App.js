@@ -74,6 +74,22 @@ function App() {
     }
   };
 
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [direction]);
+
+  useEffect(() => {
+    const interval = setInterval(moveSnake, 200);
+    return () => clearInterval(interval);
+  }, [snake, direction]);
+
+  const restartGame = () => {
+    setSnake([[10, 10]]);
+    setFood([5, 5]);
+    setDirection("RIGHT");
+    setGameOver(false);
+  };
 
 
   return (
