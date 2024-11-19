@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import leaderboardData from "./leaderboard.json";
 
 const App = () => {
   const gridSize = 20; // Size of the grid
@@ -11,7 +10,10 @@ const App = () => {
   const [direction, setDirection] = useState("RIGHT");
   const [gameOver, setGameOver] = useState(false);
   const [score, setScore] = useState(0);
-  const [leaderboard, setLeaderboard] = useState(leaderboardData);
+  const [leaderboard, setLeaderboard] = useState(() => {
+    const savedLeaderboard = localStorage.getItem("leaderboard");
+    return savedLeaderboard ? JSON.parse(savedLeaderboard) : [];
+  });
   const [playerName, setPlayerName] = useState("");
 
   // Move the snake
@@ -101,6 +103,7 @@ const App = () => {
       const updatedLeaderboard = [...leaderboard, { name: playerName, score }];
       updatedLeaderboard.sort((a, b) => b.score - a.score); // Sort by highest score
       setLeaderboard(updatedLeaderboard);
+      localStorage.setItem("leaderboard", JSON.stringify(updatedLeaderboard)); // Save to local storage
       setPlayerName(""); // Reset player name
       restartGame(); // Restart game after submission
     }
